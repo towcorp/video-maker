@@ -25,9 +25,13 @@ async function start() {
 		
 
 		return selectedPrefixText
+<<<<<<< HEAD
 	}
+=======
+    }
+
+>>>>>>> aa1a8da2b52d3f0e119a044cdd82c3dd84eb7296
 	console.log(content)
 }
 
 start()
-
