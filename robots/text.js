@@ -5,22 +5,23 @@ const sentenceBoundaryDetection = require('sbd')
 const watsonApiKey = require('../credentials/watson-nlu.json').apikey
 const NaturalLanguageUnderstandingV1 = require('watson-developer-cloud/natural-language-understanding/v1.js')
  
-var nlu = new NaturalLanguageUnderstandingV1({
+const nlu = new NaturalLanguageUnderstandingV1({
   iam_apikey: watsonApiKey,
   version: '2018-04-05',
   url: 'https://gateway.watsonplatform.net/natural-language-understanding/api/'
 })
 
+const state = require('./state.js')
 
-
-
-async function robot(content) {
+async function robot() {
+	const content = state.load()
 	await fetchContentFromWikipedia(content)
 	sanitizeContent(content)
 	breakContentIntoSentences(content)
 	limitMaximumSentences(content)
 	await fetchKeywordsOfAllSentences(content)
 	
+	state.save(content)
 			
 	async function fetchContentFromWikipedia(content) {
 		
@@ -73,7 +74,7 @@ async function robot(content) {
 	}
 	
 	async function fetchKeywordsOfAllSentences(content) {
-		console.log('> [text-robot] Starting to fetch keywords from Watson')
+		
 
 		for (const sentence of content.sentences) {
 			sentence.keywords = await fetchWatsonAndReturnKeywords(sentence.text)
