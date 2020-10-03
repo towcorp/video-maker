@@ -6,7 +6,16 @@ File: 'algorithmia.json'
 
 ```
 {
-        "apiKey": "simkffuBt41mzNoytDyEfgblvE+1"
+        "apiKey": "APYKEY"
 }
 ```
+## Watson Naturarl Language Understanding
+
+File: 'watson-nlu.json
+
+```
+{
+	"APYKEY-WATSON"
+}
+´´´
 
