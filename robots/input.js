@@ -7,7 +7,10 @@ function robot() {
 	}
 	
 	content.searchTerm = askAndReturnSearchTerm()
-	content.prefix = askAndReturnPrefix()
+	content.lang = askAndReturnLanguage()
+	content.prefix = askLanguageQuestion()
+	
+	
 	state.save(content)
 
 	function askAndReturnSearchTerm() {
@@ -18,10 +21,36 @@ function robot() {
 		const prefixes = ['Who is', 'What is', 'The history of']
 		const selectedPrefixIndex = readline.keyInSelect(prefixes, 'Choose one option: ')
 		const selectedPrefixText = prefixes[selectedPrefixIndex]
-		
-
+			
 		return selectedPrefixText
 	}
+	
+	function askAndReturnPrefix2() {
+		const prefixes = ['Quem e', 'O que e', 'A historia de']
+		const selectedPrefixIndex = readline.keyInSelect(prefixes, 'Escolha uma opcao: ')
+		const selectedPrefixText = prefixes[selectedPrefixIndex]	
+		
+		return selectedPrefixText
+	}
+	
+	function askLanguageQuestion() {
+		if (content.lang == "en") {
+			return askAndReturnPrefix()
+			
+		} else {
+			return askAndReturnPrefix2()
+		}
+		
+	}
+	
+	function askAndReturnLanguage(){
+		const language = ["pt","en"]
+		const selectedLangIndex = readline.keyInSelect(language,'Choice Language: ')
+		const selectedLangText = language[selectedLangIndex]
+		return selectedLangText
+	}
+	  
 }
+	
 
 module.exports = robot

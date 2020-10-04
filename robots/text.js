@@ -1,7 +1,8 @@
 const algorithmia = require('algorithmia')
 const algorithmiaApiKey = require('../credentials/algorithmia.json').apiKey
 const sentenceBoundaryDetection = require('sbd')
-
+const fetch = require('node-fetch')
+const algorithmiaLang = require('../credentials/algorithmia.json').lang
 const watsonApiKey = require('../credentials/watson-nlu.json').apikey
 const NaturalLanguageUnderstandingV1 = require('watson-developer-cloud/natural-language-understanding/v1.js')
  
@@ -14,7 +15,8 @@ const nlu = new NaturalLanguageUnderstandingV1({
 const state = require('./state.js')
 
 async function robot() {
-	const content = state.load()
+	var content = state.load()
+	
 	await fetchContentFromWikipedia(content)
 	sanitizeContent(content)
 	breakContentIntoSentences(content)
@@ -25,14 +27,26 @@ async function robot() {
 			
 	async function fetchContentFromWikipedia(content) {
 		
-		const algorithmiaAuthenticated = algorithmia(algorithmiaApiKey)
-		const wikipediaAlgorithm = algorithmiaAuthenticated.algo("web/WikipediaParser/0.1.2")
-		const wikipediaResponse = await wikipediaAlgorithm.pipe(content.searchTerm)
-		const wikipediaContent = wikipediaResponse.get()
-		
-		content.sourceContentOriginal = wikipediaContent.content
-	}
+		console.log('> [text-robot] Fetching content from Wikipedia')	    
 	
+		const algorithmiaAuthenticated = algorithmia(algorithmiaApiKey)	    
+		const wikipediaAlgorithm = algorithmiaAuthenticated.algo('web/WikipediaParser/0.1.2')	    
+		   
+		var term = {
+			"articleName": content.searchTerm,
+			"lang": content.lang
+		}
+		const wikipediaResponse = await wikipediaAlgorithm.pipe(term)
+		const wikipediaContent = wikipediaResponse.get()	    
+		
+
+
+		content.sourceContentOriginal = wikipediaContent.content	    
+		
+		console.log('> [text-robot] Fetching done!')	   
+		
+	}	  
+  
 	function sanitizeContent(content) {
 		const withoutBlankLinesAndMarkdown = removeBlankLinesAndMarkdown(content.sourceContentOriginal)
 		const withoutDatesInParentheses = removeDatesInParentheses(withoutBlankLinesAndMarkdown)
@@ -48,7 +62,7 @@ async function robot() {
 				}
 				return true
 			})
-			
+			console.log('> [text-robot] sanitized done!')	
 			return withoutBlankLinesAndMarkdown.join(' ')
 		}
 	}
@@ -68,6 +82,7 @@ async function robot() {
 				images: []
 			})
 		})
+		console.log('> [text-robot] breakContentIntoSentences done!')	
 	}
 	function limitMaximumSentences(content) {
 		content.sentences = content.sentences.slice(0, content.maximumSentences)
@@ -80,6 +95,7 @@ async function robot() {
 			sentence.keywords = await fetchWatsonAndReturnKeywords(sentence.text)
 		
 		}
+		
 	}
 	
 	async function fetchWatsonAndReturnKeywords(sentence) {
@@ -101,6 +117,7 @@ async function robot() {
 				resolve(keywords)
 			})
 		})
+		
 	}	
 }
 
