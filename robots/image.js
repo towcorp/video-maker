@@ -18,25 +18,46 @@ async function robot() {
 	state.save(content)
 	
 	async function fetchImagesOfAllSentences(content) {
+		for (let sentenceIndex = 0; sentenceIndex < content.sentences.length; sentenceIndex++) {
+			let query
+
+			if (sentenceIndex === 0) {
+				query = `${content.searchTerm}`
+			} else {
+				query = `${content.searchTerm} ${content.sentences[sentenceIndex].keywords[0]]}`
+			}
+
+			console.log(`> [image-robot] Querying Google Images with: "${query}"`)
+
+			content.sentences[sentenceIndex].images = await fetchGoogleAndReturnImagesLinks(query)
+			content.sentences[sentenceIndex].googleSearchQuery = query
+		}
+	}
+	
+	/*async function fetchImagesOfAllSentences(content) {
 		for (const sentence of content.sentences) {
-			const query = `${content.searchTerm}, ${sentence.keywords[0]}`
+			const query = (`${content.searchTerm}, ${sentence.keywords[0]}`)
 			sentence.images = await fetchGoogleAndReturnImagesLinks(query)
 			
 			sentence.googleSearchQuery = query
 		}
-	}
+		console.log('> [image-robot] fetchImagesOfAllSentences done!')
+	}*/
 	
 	async function fetchGoogleAndReturnImagesLinks(query) {
 		const response = await customSearch.cse.list({
 			auth: googleSearchCredentials.apiKey,
 			cx: googleSearchCredentials.SearchEngineId,
 			q: query,
-			searchType: 'image',
-			num: 2
+			searchType: 'image',						
+			num: 3
+			
 		})
+		//imgSize: 'large',
 		const imagesUrl = response.data.items.map((item) => {
 			return item.link
 		})
+		console.log('> [image-robot] fetchGoogleAndReturnImagesLinks done!')
 		return imagesUrl
 	}
 	
@@ -64,11 +85,12 @@ async function robot() {
 				
 			}
 		}
+		console.log('> [image-robot] downloadAllImages done!')
 	}
 	
 	async function dowloadAndSave(url, fileName) {
 		return imageDowloader.image({
-			url, url,
+			url: url,
 			dest: `./content/${fileName}`
 		})
 	}
