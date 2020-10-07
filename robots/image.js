@@ -24,7 +24,7 @@ async function robot() {
 			if (sentenceIndex === 0) {
 				query = `${content.searchTerm}`
 			} else {
-				query = `${content.searchTerm} ${content.sentences[sentenceIndex].keywords[0]]}`
+				query = `${content.searchTerm} ${content.sentences[sentenceIndex].keywords[0]}`
 			}
 
 			console.log(`> [image-robot] Querying Google Images with: "${query}"`)
