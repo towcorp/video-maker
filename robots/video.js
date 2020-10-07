@@ -227,8 +227,8 @@ async function robot() {
 		}
 
 		videoshow(images, videoOptions)
-			// .audio("song.mp3")
-			.save("video.mp4")
+			.audio("./templates/1/newsroom.mp3")
+			.save("./content/video.mp4")
 			.on("start", function(command) {
 				console.log("ffmpeg process started:", command)
 			})
